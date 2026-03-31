@@ -30,6 +30,13 @@ This will:
 - show a few sample images
 - train `CustomNet`
 - save the best model into `checkpoints/best_custom_net.pt`
+- log training metrics to Weights & Biases (`wandb`)
+
+If you are using Colab or another remote environment, set your API key before training:
+
+```bash
+export WANDB_API_KEY=your_api_key
+```
 
 To evaluate the saved model later:
 
