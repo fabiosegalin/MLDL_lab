@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project data and local files
+data/
+checkpoints/
+desktop.ini
