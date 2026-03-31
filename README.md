@@ -1,4 +1,4 @@
-# Lab - Setup a project from scratch
+# Lab3 - Setup a project from scratch
 
 ## Current structure
 
@@ -11,10 +11,8 @@
 
 ## Tiny ImageNet dataloader and training
 
-The recovered lab content is now split across the template:
-
 - `dataset/tiny_imagenet.py`: dataset download, transforms, train and validation loaders
-- `models/custom_net.py`: simple convolutional neural network
+- `models/custom_net.py`: convolutional neural network
 - `train.py`: training + validation loop, checkpoint saving
 - `eval.py`: load the saved checkpoint and evaluate on validation data
 
@@ -38,5 +36,3 @@ To evaluate the saved model later:
 ```bash
 python eval.py
 ```
-
-Note: your original notebook reorganized the `val/` folder so that `ImageFolder` could read it. In this project, that folder rewrite is not needed because `dataset/tiny_imagenet.py` reads `val_annotations.txt` directly.
