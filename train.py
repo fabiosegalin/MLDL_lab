@@ -102,11 +102,27 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
 
     best_acc = 0.0
+    start_epoch = 1
     checkpoint_dir = Path("checkpoints")
     checkpoint_dir.mkdir(exist_ok=True)
     checkpoint_path = checkpoint_dir / "best_custom_net.pt"
 
-    for epoch in range(1, num_epochs + 1):
+    if checkpoint_path.exists():
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+
+        if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+            model.load_state_dict(checkpoint["model_state_dict"])
+            if "optimizer_state_dict" in checkpoint:
+                optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+            start_epoch = checkpoint.get("epoch", 0) + 1
+            best_acc = checkpoint.get("best_acc", 0.0)
+        else:
+            model.load_state_dict(checkpoint)
+
+        print(f"Resuming training from {checkpoint_path}")
+        print(f"Starting from epoch {start_epoch} with best accuracy {best_acc:.2f}%")
+
+    for epoch in range(start_epoch, num_epochs + 1):
         train_loss, train_accuracy = train_one_epoch(epoch, model, train_loader, criterion, optimizer, device)
         val_loss, val_accuracy = validate(model, val_loader, criterion, device)
 
@@ -122,7 +138,15 @@ def main():
 
         if val_accuracy > best_acc:
             best_acc = val_accuracy
-            torch.save(model.state_dict(), checkpoint_path)
+            torch.save(
+                {
+                    "epoch": epoch,
+                    "model_state_dict": model.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict(),
+                    "best_acc": best_acc,
+                },
+                checkpoint_path,
+            )
             print(f"Saved best checkpoint to {checkpoint_path}")
             wandb.log({"best_val_accuracy": best_acc})
 
